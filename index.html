@@ -11,9 +11,9 @@
     <style>
         :root {
             --bg-color: #0a0a14;
-            --primary-color: #00c6ff;
-            --secondary-color: #a371f7;
-            --accent-color: #007bff;
+            --primary-color: #00c6ff; /* Cyan */
+            --secondary-color: #a371f7; /* Purple */
+            --accent-color: #007bff; /* Blue */
             --card-bg-color: rgba(22, 27, 34, 0.65);
             --border-color: rgba(60, 68, 87, 0.7);
         }
@@ -27,57 +27,37 @@
         
         .font-serif { font-family: 'Playfair Display', serif; }
 
-        /* --- RAINBOW PHOTO BORDER --- */
-        .rainbow-container {
-            position: relative;
-            width: fit-content;
-            height: fit-content;
-            padding: 5px; /* Border thickness */
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 0 25px rgba(0, 198, 255, 0.3);
-        }
-
-        .rainbow-container::before {
-            content: '';
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            background: conic-gradient(
-                #fd004c, #fe9000, #fff020, #3edf4b, #3363ff, #b102b7, #fd004c
-            );
-            animation: rotate-rainbow 4s linear infinite;
-        }
-
-        @keyframes rotate-rainbow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .profile-img-inner {
-            position: relative;
-            z-index: 10;
-            background-color: var(--bg-color);
-            border: 4px solid var(--bg-color); /* Creates a gap between image and rainbow */
-        }
-
-        /* --- PRE-EXISTING STYLES --- */
         .section-card {
             background: var(--card-bg-color);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(12px);
             border-radius: 1.5rem;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Added transitions */
         }
         
         .nav-link { position: relative; transition: color 0.3s ease; }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 50%; transform: translateX(-50%); background-color: var(--primary-color); transition: width 0.3s ease; }
         .nav-link:hover, .nav-link:focus, .nav-link.active { color: white; }
         .nav-link:hover::after, .nav-link:focus::after, .nav-link.active::after { width: 100%; }
+        
+        /* Glowing Effects */
+        .glowing-border { position: relative; border-radius: 1.5rem; padding: 2px; overflow: hidden; }
+        .glowing-border::before {
+            content: ''; position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(
+                from 180deg at 50% 50%,
+                var(--bg-color) 0%,
+                var(--primary-color) 10%,
+                var(--accent-color) 50%,
+                var(--primary-color) 90%,
+                var(--bg-color) 100%
+            );
+            animation: rotate 6s linear infinite;
+        }
+        .glowing-border > * { position: relative; z-index: 1; }
         
         .glowing-icon { filter: drop-shadow(0 0 8px var(--primary-color)); transition: filter 0.3s ease; }
         *:hover > .glowing-icon { filter: drop-shadow(0 0 15px var(--primary-color)); }
@@ -95,6 +75,7 @@
         .submit-button { background-color: var(--accent-color); transition: all 0.3s; border-radius: 0.75rem; }
         .submit-button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 123, 255, 0.25); }
 
+        /* --- NEW: Gradient Text --- */
         .gradient-text {
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
@@ -102,45 +83,48 @@
             color: transparent;
         }
 
+        /* --- ENHANCED: Project Card Hover --- */
         .project-card.group:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px); /* Lifts the card up */
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             border-color: var(--primary-color);
         }
 
-        .transparent-home-card { background: rgba(22, 27, 34, 0.15); }
-
-        @keyframes letter-reveal {
-            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+        .transparent-home-card {
+            background: rgba(22, 27, 34, 0.15);
         }
 
-        #typed-name span { display: inline-block; opacity: 0; animation: letter-reveal 0.5s forwards; }
+        /* --- NEW: Name letter animation --- */
+        @keyframes letter-reveal {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #typed-name span {
+            display: inline-block;
+            opacity: 0;
+            animation: letter-reveal 0.5s forwards;
+        }
     </style>
 </head>
 <body class="antialiased">
     
+    <!-- New CSE-style background canvas -->
     <canvas id="particle-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
 
     <header class="bg-black/20 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 border-b border-white/10">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#home" class="text-2xl font-bold font-serif text-white">SD</a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#home" class="nav-link text-slate-300 font-medium active">About Me</a>
-                <a href="#education" class="nav-link text-slate-300 font-medium">Education</a>
-                <a href="#projects" class="nav-link text-slate-300 font-medium">Projects</a>
-                <a href="#certificates" class="nav-link text-slate-300 font-medium">Certificates</a>
-                <a href="#connect" class="nav-link text-slate-300 font-medium">Connect</a>
-            </div>
+            <div class="hidden md:flex items-center space-x-8"><a href="#home" class="nav-link text-slate-300 font-medium active">About Me</a><a href="#education" class="nav-link text-slate-300 font-medium">Education</a><a href="#projects" class="nav-link text-slate-300 font-medium">Projects</a><a href="#certificates" class="nav-link text-slate-300 font-medium">Certificates</a><a href="#connect" class="nav-link text-slate-300 font-medium">Connect</a></div>
             <button id="mobile-menu-button" class="md:hidden text-slate-200 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 border-t border-slate-700">
-            <a href="#home" class="nav-link-mobile block py-2 text-slate-300 font-medium">About Me</a>
-            <a href="#education" class="nav-link-mobile block py-2 text-slate-300 font-medium">Education</a>
-            <a href="#projects" class="nav-link-mobile block py-2 text-slate-300 font-medium">Projects</a>
-            <a href="#certificates" class="nav-link-mobile block py-2 text-slate-300 font-medium">Certificates</a>
-            <a href="#connect" class="nav-link-mobile block py-2 text-slate-300 font-medium">Connect</a>
-        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 border-t border-slate-700"><a href="#home" class="nav-link-mobile block py-2 text-slate-300 font-medium">About Me</a><a href="#education" class="nav-link-mobile block py-2 text-slate-300 font-medium">Education</a><a href="#projects" class="nav-link-mobile block py-2 text-slate-300 font-medium">Projects</a><a href="#certificates" class="nav-link-mobile block py-2 text-slate-300 font-medium">Certificates</a><a href="#connect" class="nav-link-mobile block py-2 text-slate-300 font-medium">Connect</a></div>
     </header>
 
     <main class="container mx-auto px-6">
@@ -148,11 +132,7 @@
             <div class="section-card transparent-home-card max-w-4xl w-full p-8 md:p-12">
                 <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
                     <div class="flex-shrink-0">
-                        <div class="rainbow-container">
-                            <img src="https://raw.githubusercontent.com/soumya480/soumya480.github.io/main/WhatsApp%20Image%202025-07-13%20at%2017.51.37_1649b8b9.jpg" 
-                                 alt="Profile Photo" 
-                                 class="profile-img-inner w-32 h-32 md:w-48 md:h-48 rounded-full object-cover">
-                        </div>
+                        <img src="https://raw.githubusercontent.com/soumya480/soumya480.github.io/main/WhatsApp%20Image%202025-07-13%20at%2017.51.37_1649b8b9.jpg" alt="Profile Photo" class="w-32 h-32 md:w-48 md:h-48 rounded-full object-cover border-4 border-slate-700 shadow-lg">
                     </div>
                     <div class="text-center md:text-left">
                         <h1 class="text-4xl md:text-5xl font-bold font-serif text-white mb-3 h-16 md:h-20"><span id="typed-name"></span></h1>
@@ -199,33 +179,45 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 <div class="section-card p-8 text-center">
                     <div class="text-cyan-400 mb-4"><i class="fas fa-award fa-3x glowing-icon"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-1"><a href="https://archive.nptel.ac.in/content/noc/NOC24/SEM2/Ecertificates/109/noc24-hs176/Course/NPTEL24HS176S65230309504324033.pdf" class="hover:text-cyan-400 hover:underline transition-colors">NPTEL Course</a></h3>
+                    <h3 class="text-xl font-bold text-white mb-1">
+                        <a href="https://archive.nptel.ac.in/content/noc/NOC24/SEM2/Ecertificates/109/noc24-hs176/Course/NPTEL24HS176S65230309504324033.pdf" class="hover:text-cyan-400 hover:underline transition-colors">NPTEL Course</a>
+                    </h3>
                     <p class="text-slate-400">Developing Soft Skills and Personality</p>
                 </div>
                 <div class="section-card p-8 text-center">
                     <div class="text-cyan-400 mb-4"><i class="fas fa-award fa-3x glowing-icon"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-1"><a href="https://archive.nptel.ac.in/content/noc/NOC25/SEM1/Ecertificates/106/noc25-cs69/Course/NPTEL25CS69S94950145904462065.pdf" class="hover:text-cyan-400 hover:underline transition-colors">NPTEL Course</a></h3>
+                    <h3 class="text-xl font-bold text-white mb-1">
+                        <a href="https://archive.nptel.ac.in/content/noc/NOC25/SEM1/Ecertificates/106/noc25-cs69/Course/NPTEL25CS69S94950145904462065.pdf" class="hover:text-cyan-400 hover:underline transition-colors">NPTEL Course</a>
+                    </h3>
                     <p class="text-slate-400">The Joy of Computing using Python</p>
                 </div>
                 <div class="section-card p-8 text-center">
                     <div class="text-cyan-400 mb-4"><i class="fas fa-award fa-3x glowing-icon"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-1"><a href="https://www.coursera.org/account/accomplishments/verify/OB8NW539MPSU" class="hover:text-cyan-400 hover:underline transition-colors">Coursera Course</a></h3>
-                    <p class="text-slate-400">Python for Data Science (IBM)</p>
+                    <h3 class="text-xl font-bold text-white mb-1">
+                        <a href="https://www.coursera.org/account/accomplishments/verify/OB8NW539MPSU?utm_source%3Dandroid%26utm_medium%3Dcertificate%26utm_content%3Dcert_image%26utm_campaign%3Dsharing_cta%26utm_product%3Dcourse" class="hover:text-cyan-400 hover:underline transition-colors">Courseera Course</a>
+                    </h3>
+                    <p class="text-slate-400">Python for Data Science,AI & Development(IBM)</p>
                 </div>
                 <div class="section-card p-8 text-center">
                     <div class="text-cyan-400 mb-4"><i class="fas fa-award fa-3x glowing-icon"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-1"><a href="https://www.coursera.org/account/accomplishments/verify/E00RVEUP544W" class="hover:text-cyan-400 hover:underline transition-colors">Coursera Course</a></h3>
+                    <h3 class="text-xl font-bold text-white mb-1">
+                        <a href="https://www.coursera.org/account/accomplishments/verify/E00RVEUP544W?utm_source%3Dandroid%26utm_medium%3Dcertificate%26utm_content%3Dcert_image%26utm_campaign%3Dsharing_cta%26utm_product%3Dcourse" class="hover:text-cyan-400 hover:underline transition-colors">Courseera Course</a>
+                    </h3>
                     <p class="text-slate-400">Programming with C</p>
                 </div>
                 <div class="section-card p-8 text-center">
                     <div class="text-cyan-400 mb-4"><i class="fas fa-award fa-3x glowing-icon"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-1"><a href="https://www.coursera.org/account/accomplishments/verify/ZE3OU6YH42SJ" class="hover:text-cyan-400 hover:underline transition-colors">Coursera Course</a></h3>
-                    <p class="text-slate-400">MATLAB Programming for AI</p>
+                    <h3 class="text-xl font-bold text-white mb-1">
+                        <a href="https://www.coursera.org/account/accomplishments/verify/ZE3OU6YH42SJ?utm_source%3Dandroid%26utm_medium%3Dcertificate%26utm_content%3Dcert_image%26utm_campaign%3Dsharing_cta%26utm_product%3Dcourse" class="hover:text-cyan-400 hover:underline transition-colors">Courseera Course</a>
+                    </h3>
+                    <p class="text-slate-400">Fundamental MATLAB Programming for AI</p>
                 </div>
                 <div class="section-card p-8 text-center">
                     <div class="text-cyan-400 mb-4"><i class="fas fa-award fa-3x glowing-icon"></i></div>
-                    <h3 class="text-xl font-bold text-white mb-1"><a href="https://www.coursera.org/account/accomplishments/verify/7E1EI0ER7FNA" class="hover:text-cyan-400 hover:underline transition-colors">Coursera Course</a></h3>
-                    <p class="text-slate-400">Intro to IT & AWS Cloud</p>
+                    <h3 class="text-xl font-bold text-white mb-1">
+                        <a href="https://www.coursera.org/account/accomplishments/verify/7E1EI0ER7FNA?utm_source%3Dandroid%26utm_medium%3Dcertificate%26utm_content%3Dcert_image%26utm_campaign%3Dsharing_cta%26utm_product%3Dcourse" class="hover:text-cyan-400 hover:underline transition-colors">Courseera Course</a>
+                    </h3>
+                    <p class="text-slate-400">Introduction to Information Technology and AWS Cloud</p>
                 </div>
             </div>
         </section>
@@ -240,7 +232,7 @@
                         <p class="text-slate-300 mb-6">I'm currently available for freelance work and open to discussing new projects. My inbox is always open.</p>
                         <div class="flex justify-center md:justify-start space-x-6">
                             <a href="https://github.com/soumya480" class="text-slate-400 hover:text-cyan-400 transition-colors"><i class="fab fa-github fa-2x"></i></a>
-                            <a href="https://www.linkedin.com/in/soumyadeep-dinda-746bb1317" class="text-slate-400 hover:text-cyan-400 transition-colors"><i class="fab fa-linkedin fa-2x"></i></a>
+                            <a href="https://www.linkedin.com/in/soumyadeep-dinda-746bb1317?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="text-slate-400 hover:text-cyan-400 transition-colors"><i class="fab fa-linkedin fa-2x"></i></a>
                             <a href="https://www.hackerrank.com/profile/SoumyadeepAI2A72" class="text-slate-400 hover:text-cyan-400 transition-colors"><i class="fab fa-hackerrank fa-2x"></i></a>
                         </div>
                     </div>
@@ -266,34 +258,37 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Name letter-by-letter animation
+        // --- NEW: Name letter-by-letter animation ---
         const nameElement = document.getElementById('typed-name');
         const nameText = "Soumyadeep Dinda";
-        nameElement.innerHTML = '';
+        nameElement.innerHTML = ''; // Clear any existing content
+
         nameText.split('').forEach((letter, index) => {
             const span = document.createElement('span');
+            // Use a non-breaking space for spaces to maintain layout
             span.textContent = letter === ' ' ? '\u00A0' : letter;
             span.style.animationDelay = `${index * 0.07}s`;
             nameElement.appendChild(span);
         });
         
-        // 3D Tilt Effect
+        // --- 3D Tilt Effect ---
         const tiltCards = document.querySelectorAll('.tilt-card');
         tiltCards.forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const { left, top, width, height } = card.getBoundingClientRect();
-                const x = (e.clientX - left - width / 2) / (width / 2);
-                const y = (e.clientY - top - height / 2) / (height / 2);
+                const x = (e.clientX - left - width / 2) / (width / 2); // -1 to 1
+                const y = (e.clientY - top - height / 2) / (height / 2); // -1 to 1
                 card.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) scale3d(1.05, 1.05, 1.05)`;
-                card.style.transition = 'transform 0.1s ease';
+                card.style.transition = 'transform 0.1s ease'; // Fast transition while moving
             });
+
             card.addEventListener('mouseleave', () => {
                 card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale3d(1, 1, 1)';
-                card.style.transition = 'transform 0.5s ease';
+                card.style.transition = 'transform 0.5s ease'; // Slower transition back to normal
             });
         });
 
-        // Particle Canvas Background
+        // --- NEW: Particle Canvas Background ---
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particlesArray;
@@ -339,12 +334,13 @@
         }
 
         function connectParticles() {
+            let opacityValue = 1;
             for (let a = 0; a < particlesArray.length; a++) {
                 for (let b = a; b < particlesArray.length; b++) {
                     let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
                                  + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
                     if (distance < (canvas.width / 8) * (canvas.height / 8)) {
-                        let opacityValue = 1 - (distance / 20000);
+                        opacityValue = 1 - (distance / 20000);
                         ctx.strokeStyle = `rgba(0, 123, 255, ${opacityValue})`;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
@@ -365,14 +361,20 @@
             connectParticles();
         }
 
-        window.addEventListener('resize', () => { setCanvasSize(); initParticles(); });
+        window.addEventListener('resize', () => {
+            setCanvasSize();
+            initParticles();
+        });
+
         initParticles();
         animateParticles();
         
-        // Navigation & Form handling
+        // --- Existing Scripts (Unchanged) ---
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
+        const mobileNavLinks = document.querySelectorAll('.nav-link-mobile');
         mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileNavLinks.forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('header nav a.nav-link');
@@ -391,19 +393,28 @@
         document.querySelectorAll('.fade-in-section').forEach(section => observer.observe(section));
 
         const form = document.getElementById('contact-form');
+        const formStatus = document.getElementById('form-status');
+        const submitButton = document.getElementById('submit-button');
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const submitButton = document.getElementById('submit-button');
+            const data = new FormData(e.target);
             submitButton.disabled = true;
             submitButton.innerHTML = `Sending...`;
+            formStatus.textContent = '';
             try {
-                const response = await fetch(e.target.action, { method: form.method, body: new FormData(e.target), headers: { 'Accept': 'application/json' } });
+                const response = await fetch(e.target.action, { method: form.method, body: data, headers: { 'Accept': 'application/json' } });
                 if (response.ok) {
-                    document.getElementById('form-status').textContent = "Message sent successfully!";
+                    formStatus.textContent = "Message sent successfully!";
+                    formStatus.style.color = "lightgreen";
                     form.reset();
+                } else {
+                    const d = await response.json();
+                    formStatus.textContent = d.errors?.map(e => e.message).join(", ") || "Oops! There was a problem.";
+                    formStatus.style.color = "lightcoral";
                 }
             } catch (error) {
-                document.getElementById('form-status').textContent = "Oops! Error.";
+                formStatus.textContent = "Oops! There was an error.";
+                formStatus.style.color = "lightcoral";
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Send Message';
@@ -413,3 +424,7 @@
     </script>
 </body>
 </html>
+
+
+
+
